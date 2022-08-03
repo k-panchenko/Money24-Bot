@@ -1,0 +1,2 @@
+RATES = 'rates'
+SUBS = 'subs'
