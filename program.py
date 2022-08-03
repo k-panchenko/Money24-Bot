@@ -9,8 +9,11 @@ from aiogram.dispatcher import filters
 from aiogram.utils import exceptions, markdown
 from aiogram.utils.executor import start_polling
 from aioredis import Redis
+from statics.types import *
 
 from client.money24_client import Money24Client
+from provider.money24_rate_provider import Money24RateProvider
+from provider.redis_rate_provider import RedisRateProvider
 from statics import menu, currency, redis_keys, url
 
 logging.basicConfig(level=logging.INFO)
@@ -26,7 +29,8 @@ dp = Dispatcher(bot)
 
 redis = Redis(host=REDIS_HOST, port=REDIS_PORT, db=REDIS_DB, decode_responses=True)
 
-money24_client = Money24Client()
+money24_rate_provider = Money24RateProvider(Money24Client())
+redis_rate_provider = RedisRateProvider(redis)
 
 
 @dp.message_handler(commands='start')
@@ -45,10 +49,10 @@ async def start_command(message: types.Message):
 
 @dp.message_handler(filters.Text(equals=menu.GET_RATES))
 async def get_rates_handler(message: types.Message):
-    rates = json.loads(await redis.get(redis_keys.RATES))
-    buy_rate = next(filter(lambda rate: rate['type'] == 'buy', rates))
-    sell_rate = next(filter(lambda rate: rate['type'] == 'sal', rates))
-    text = '\n'.join(['Доллар США 🇺🇸', '', f'Покупка: {buy_rate["rate"]}', f'Продажа: {sell_rate["rate"]}'])
+    rates = await redis_rate_provider.get_rates()
+    buy_rate = rates[currency.USD][BUY]
+    sell_rate = rates[currency.USD][SELL]
+    text = '\n'.join(['Доллар США 🇺🇸', '', f'Покупка: {buy_rate}', f'Продажа: {sell_rate}'])
     await message.answer(text)
 
 
@@ -68,39 +72,29 @@ async def unsub_handler(message: types.Message):
 
 @aiocron.crontab('* * * * *')
 async def do_work():
-    rates = await redis.get(redis_keys.RATES)
-    old_rates = json.loads(rates) if rates else None
-    new_rates = await sync_rate()
-    if not old_rates or old_rates == new_rates:
+    curr_rates = await redis_rate_provider.get_rates()
+    new_rates = await money24_rate_provider.get_rates()
+    up_to_date = curr_rates[currency.USD] != new_rates[currency.USD]
+    if not curr_rates or up_to_date:
+        await redis_rate_provider.save_rates(new_rates)
+    if not curr_rates:
         return
-    await notify_about_new_rates(old_rates, new_rates)
+    if not up_to_date:
+        return
+    await notify_about_new_rates(curr_rates, new_rates)
 
 
-async def sync_rate():
-    rates = await money24_client.get_rates()
-    result = rates['result']
-    usd_rates = [rate for rate in result if rate['currCode'] == currency.USD]
-    await redis.set(redis_keys.RATES, json.dumps(usd_rates))
-    return usd_rates
-
-
-async def notify_about_new_rates(old_rates, new_rates):
-    old_buy_rate = next(filter(lambda rate: rate['type'] == 'buy', old_rates))
-    old_sell_rate = next(filter(lambda rate: rate['type'] == 'sal', old_rates))
-
-    new_buy_rate = next(filter(lambda rate: rate['type'] == 'buy', new_rates))
-    new_sell_rate = next(filter(lambda rate: rate['type'] == 'sal', new_rates))
-
-    buy_diff = new_buy_rate['rate'] - old_buy_rate['rate']
-    sell_diff = new_sell_rate['rate'] - old_sell_rate['rate']
+async def notify_about_new_rates(curr_rates, new_rates):
+    buy_diff = round(new_rates[currency.USD][BUY] - curr_rates[currency.USD][BUY], 2)
+    sell_diff = round(new_rates[currency.USD][SELL] - curr_rates[currency.USD][SELL], 2)
 
     text = '\n'.join([
         'Курс изменился❗',
         '\n'
         'Доллар США 🇺🇸',
         '\n'
-        f'Покупка: {new_buy_rate["rate"]} {diff_to_move(buy_diff)}',
-        f'Продажа: {new_sell_rate["rate"]} {diff_to_move(sell_diff)}'
+        f'Покупка: {new_rates[currency.USD][BUY]} {diff_to_move(buy_diff)}',
+        f'Продажа: {new_rates[currency.USD][SELL]} {diff_to_move(sell_diff)}'
     ])
 
     for member in await redis.smembers(redis_keys.SUBS):
@@ -120,9 +114,9 @@ async def create_keyboard(user: int):
 
 def diff_to_move(number: float):
     if number > 0:
-        return f'🔺🔴 {number}'
+        return f'🆘 ➕{number}'
     elif number < 0:
-        return f'🔻🟢 {abs(number)}'
+        return f'💹 ➖{abs(number)}'
     else:
         return ''
 

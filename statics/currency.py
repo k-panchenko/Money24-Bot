@@ -1,1 +1,1 @@
-USD = 'usd'
+USD = 'USD'
