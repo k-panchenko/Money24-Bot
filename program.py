@@ -120,9 +120,9 @@ async def create_keyboard(user: int):
 
 def diff_to_move(number: float):
     if number > 0:
-        return f'🔺➕ {number}'
+        return f'🔺🔴 {number}'
     elif number < 0:
-        return f'🔻➖ {abs(number)}'
+        return f'🔻🟢 {abs(number)}'
     else:
         return ''
 
