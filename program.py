@@ -85,7 +85,7 @@ async def do_work():
 
 
 async def notify_about_new_rates(curr_rates, new_rates):
-    buy_diff = round(new_rates[currency.USD][BUY] - curr_rates[currency.USD][BUY], 2)
+    buy_diff = round(curr_rates[currency.USD][BUY] - new_rates[currency.USD][BUY], 2)
     sell_diff = round(new_rates[currency.USD][SELL] - curr_rates[currency.USD][SELL], 2)
 
     text = '\n'.join([
