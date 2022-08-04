@@ -1,5 +1,4 @@
 import asyncio
-import json
 import logging
 from os import environ as env
 
@@ -9,12 +8,12 @@ from aiogram.dispatcher import filters
 from aiogram.utils import exceptions, markdown
 from aiogram.utils.executor import start_polling
 from aioredis import Redis
-from statics.types import *
 
 from client.money24_client import Money24Client
 from provider.money24_rate_provider import Money24RateProvider
 from provider.redis_rate_provider import RedisRateProvider
 from statics import menu, currency, redis_keys, url
+from statics.types import *
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -85,7 +84,7 @@ async def do_work():
 
 
 async def notify_about_new_rates(curr_rates, new_rates):
-    buy_diff = round(curr_rates[currency.USD][BUY] - new_rates[currency.USD][BUY], 2)
+    buy_diff = round(new_rates[currency.USD][BUY] - curr_rates[currency.USD][BUY], 2)
     sell_diff = round(new_rates[currency.USD][SELL] - curr_rates[currency.USD][SELL], 2)
 
     text = '\n'.join([
@@ -93,8 +92,8 @@ async def notify_about_new_rates(curr_rates, new_rates):
         '\n'
         'Доллар США 🇺🇸',
         '\n'
-        f'Покупка: {new_rates[currency.USD][BUY]} {diff_to_move(buy_diff)}',
-        f'Продажа: {new_rates[currency.USD][SELL]} {diff_to_move(sell_diff)}'
+        f'Покупка: {new_rates[currency.USD][BUY]} {diff_to_move(buy_diff, BUY)}',
+        f'Продажа: {new_rates[currency.USD][SELL]} {diff_to_move(sell_diff, SELL)}'
     ])
 
     for member in await redis.smembers(redis_keys.SUBS):
@@ -112,13 +111,13 @@ async def create_keyboard(user: int):
     return types.ReplyKeyboardMarkup(resize_keyboard=True, row_width=1).add(*buttons)
 
 
-def diff_to_move(number: float):
-    if number > 0:
-        return f'🆘 ➕{number}'
-    elif number < 0:
-        return f'💹 ➖{abs(number)}'
-    else:
+def diff_to_move(number: float, rtype: str):
+    if number == 0:
         return ''
+    signal = '💹' if rtype == BUY and number > 0 or rtype == SELL and number < 0 else '🆘'
+    sign = '➕' if number > 0 else '➖'
+
+    return f'{signal} {sign}{abs(number)}'
 
 
 if __name__ == '__main__':
