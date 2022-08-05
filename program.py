@@ -88,9 +88,7 @@ async def notify_about_new_rates(curr_rates, new_rates):
     sell_diff = round(new_rates[currency.USD][SELL] - curr_rates[currency.USD][SELL], 2)
 
     text = '\n'.join([
-        'Курс изменился❗',
-        '\n'
-        'Доллар США 🇺🇸',
+        'Доллар США 🇺🇸 Курс изменился❗',
         '\n'
         f'Покупка: {new_rates[currency.USD][BUY]} {diff_to_move(buy_diff, BUY)}',
         f'Продажа: {new_rates[currency.USD][SELL]} {diff_to_move(sell_diff, SELL)}'
