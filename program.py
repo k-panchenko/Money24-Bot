@@ -73,12 +73,12 @@ async def unsub_handler(message: types.Message):
 async def do_work():
     curr_rates = await redis_rate_provider.get_rates()
     new_rates = await money24_rate_provider.get_rates()
-    up_to_date = curr_rates[currency.USD] != new_rates[currency.USD]
-    if not curr_rates or up_to_date:
+    up_to_date = not curr_rates or curr_rates[currency.USD] != new_rates[currency.USD]
+    if up_to_date:
         await redis_rate_provider.save_rates(new_rates)
-    if not curr_rates:
+    else:
         return
-    if not up_to_date:
+    if not curr_rates:
         return
     await notify_about_new_rates(curr_rates, new_rates)
 
