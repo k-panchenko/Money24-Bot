@@ -98,7 +98,7 @@ async def notify_about_new_rates(curr_rates, new_rates):
         try:
             await bot.send_message(member, text)
             await asyncio.sleep(.05)
-        except exceptions.BadRequest as ex:
+        except exceptions.TelegramAPIError as ex:
             logger.warning(f'Bad request while sending message to {member}: {ex}')
 
 
