@@ -13,9 +13,7 @@ class RedisRateProvider(RateProvider):
 
     async def get_rates(self) -> Optional[dict]:
         result = await self._redis.get(redis_keys.RATES)
-        if not result:
-            return 
-        return json.loads(result)
+        return json.loads(result) if result else None
 
     async def save_rates(self, rates: dict):
         await self._redis.set(redis_keys.RATES, json.dumps(rates))
