@@ -1,2 +1,3 @@
 RATES = 'rates'
-SUBS = 'subs'
+SUBS = 'subs:{currency}'
+CURRENCIES = 'currencies'

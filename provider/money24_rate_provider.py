@@ -21,5 +21,3 @@ class Money24RateProvider(RateProvider):
 
     async def save_rates(self, rates: dict):
         raise NotImplementedError()
-
-
