@@ -48,8 +48,11 @@ async def start_command(message: types.Message):
 
 @dp.message_handler(filters.Text(equals=menu.GET_RATES))
 async def get_rates_handler(message: types.Message):
+    currencies = await currency_provider.get_currencies()
     rates = await redis_rate_provider.get_rates()
-    await message.answer(currency_utils.rates_to_text(rates))
+    rates = {currency: rate for currency, rate in rates.items() if currency in currencies}
+    sorted_rates = dict(sorted(rates.items(), key=lambda item: currencies.index(item[0])))
+    await message.answer(currency_utils.rates_to_text(sorted_rates))
 
 
 @dp.message_handler(filters.Text(equals=menu.SUB))
@@ -79,12 +82,13 @@ async def do_work():
 
 
 async def update_rates(curr_rates: dict, new_rates: dict):
+    if curr_rates != new_rates:
+        await redis_rate_provider.save_rates(new_rates)
     for rate in new_rates:
         curr_rate = curr_rates[rate]
         new_rate = new_rates[rate]
         if curr_rate == new_rate:
             continue
-        await redis_rate_provider.save_rates(new_rates)  # TODO: save only one maybe
         await notify_about_new_rates(rate, curr_rate, new_rate)
 
 
