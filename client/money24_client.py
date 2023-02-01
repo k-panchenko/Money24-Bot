@@ -10,4 +10,5 @@ class Money24Client:
     async def get_rates(self) -> dict:
         async with aiohttp.ClientSession(url.MONEY24_URL) as session:
             async with session.post(self._rates_api, data=self._rates_body) as response:
+                response.raise_for_status()
                 return await response.json()
