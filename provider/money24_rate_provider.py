@@ -12,7 +12,7 @@ class Money24RateProvider(RateProvider):
     async def get_rates(self) -> Optional[dict]:
         rates = await self._money24_client.get_rates()
         result = {}
-        for rate in rates['result']['rate']:
+        for rate in rates['result']['rates']:
             currency = str(rate['currCode']).upper()
             typed_rate = result.setdefault(currency, {})
             typed_rate[types.BUY if rate['type'] == 'buy' else types.SELL] = rate['rate']
