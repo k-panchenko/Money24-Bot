@@ -1,0 +1,10 @@
+spring:
+  cloud:
+    openfeign:
+      client:
+        config:
+          money24Client:
+            url: https://money24.com.ua/00000000-0000-0000-0000-000000000000/api/
+telegram-bot:
+  token: YOUR_BOT_TOKEN_HERE
+  username: YOUR_BOT_USERNAME_HERE
