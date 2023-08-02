@@ -10,7 +10,6 @@ import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 @EnableScheduling
 @EnableFeignClients
 @SpringBootApplication
-@Import(TelegramBotStarterConfiguration.class)
 public class Application {
 
     public static void main(String[] args) {

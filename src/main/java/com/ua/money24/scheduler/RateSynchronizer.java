@@ -1,27 +1,22 @@
 package com.ua.money24.scheduler;
 
-import com.ua.money24.client.Money24Client;
-import com.ua.money24.model.ExecAsPublicRequest;
+import com.ua.money24.model.request.ExecAsPublicRequest;
+import com.ua.money24.provider.rate.RateProvider;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
-
 @Component
 public class RateSynchronizer {
-    private final Money24Client money24Client;
+    private final RateProvider money24RateProvider;
+    private final RateProvider internalRateProvider;
 
-    public RateSynchronizer(Money24Client money24Client) {
-        this.money24Client = money24Client;
+    public RateSynchronizer(RateProvider money24RateProvider, RateProvider internalRateProvider) {
+        this.money24RateProvider = money24RateProvider;
+        this.internalRateProvider = internalRateProvider;
     }
 
     @Scheduled(fixedRate = 5000)
-    public void myScheduledTask() {
-        // Your task logic goes here
-        money24Client.execAsPublic(new ExecAsPublicRequest(
-                "get",
-                "/rates/department-and-region-v2/2/3",
-                Map.of()
-        ));
+    public void syncRates() {
+
     }
 }

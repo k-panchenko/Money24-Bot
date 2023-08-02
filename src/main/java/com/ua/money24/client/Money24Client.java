@@ -1,7 +1,7 @@
 package com.ua.money24.client;
 
-import com.ua.money24.model.ExecAsPublicRequest;
-import com.ua.money24.model.ExecAsPublicResponse;
+import com.ua.money24.model.request.ExecAsPublicRequest;
+import com.ua.money24.model.response.ExecAsPublicResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
