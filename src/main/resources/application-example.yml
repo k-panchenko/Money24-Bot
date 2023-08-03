@@ -4,10 +4,12 @@ spring:
       client:
         config:
           money24Client:
-            url: https://money24.com.ua
+            url: https://money24.com.ua/
 
 telegram-bot:
   token: YOUR_BOT_TOKEN_HERE
   username: YOUR_BOT_USERNAME_HERE
 
-applicaion:
+application:
+  region: 3
+  sync-rate-seconds: 60

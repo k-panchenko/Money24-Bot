@@ -1,4 +1,4 @@
-package com.ua.money24.provider.rate;
+package com.ua.money24.service.provider.rate;
 
 import com.ua.money24.model.Rate;
 import org.springframework.stereotype.Component;
@@ -9,6 +9,6 @@ import java.util.List;
 public class InternalRateProvider implements RateProvider {
     @Override
     public List<Rate> getRatesInRegion(int regionId) {
-        return null;
+        return List.of();
     }
 }

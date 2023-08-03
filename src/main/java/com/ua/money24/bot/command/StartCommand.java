@@ -4,6 +4,7 @@ import com.ua.money24.constants.Messages;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.methods.ParseMode;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Chat;
 import org.telegram.telegrambots.meta.api.objects.User;
@@ -23,7 +24,11 @@ public class StartCommand extends BotCommand {
 
     @Override
     public void execute(AbsSender absSender, User user, Chat chat, String[] arguments) {
-        var sendMessage = new SendMessage(chat.getId().toString(), String.format(Messages.START, money24Url));
+        var sendMessage = SendMessage.builder()
+                .chatId(chat.getId().toString())
+                .text(String.format(Messages.START, money24Url))
+                .parseMode(ParseMode.MARKDOWN)
+                .build();
         try {
             absSender.execute(sendMessage);
         } catch (TelegramApiException e) {
