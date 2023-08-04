@@ -5,6 +5,11 @@ spring:
         config:
           money24Client:
             url: https://money24.com.ua/
+  datasource:
+    url: jdbc:sqlite:rates.db
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 telegram-bot:
   token: YOUR_BOT_TOKEN_HERE
