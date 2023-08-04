@@ -2,6 +2,7 @@ package com.ua.money24.service.scheduler;
 
 import com.ua.money24.service.provider.rate.RateProvider;
 import com.ua.money24.service.provider.region.RegionProvider;
+import com.ua.money24.service.publisher.RatePublisher;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -13,11 +14,16 @@ public class RateSynchronizer {
     private final RateProvider internalRateProvider;
     private final RegionProvider regionProvider;
 
+
+    private final RatePublisher ratePublisher;
+
+
     public RateSynchronizer(RateProvider money24RateProvider, RateProvider internalRateProvider,
-                            RegionProvider regionProvider) {
+                            RegionProvider regionProvider, RatePublisher ratePublisher) {
         this.money24RateProvider = money24RateProvider;
         this.internalRateProvider = internalRateProvider;
         this.regionProvider = regionProvider;
+        this.ratePublisher = ratePublisher;
     }
 
     @Scheduled(fixedRateString = "${application.sync-rate-seconds}", timeUnit = TimeUnit.SECONDS)
@@ -28,14 +34,13 @@ public class RateSynchronizer {
 
             money24Rates.removeAll(internalRates);
 
-            money24Rates.forEach(newRate -> internalRates.stream()
-                    .filter(rate -> rate.id() == newRate.id() &&
-                            rate.type().equals(newRate.type()) &&
-                            rate.rate() != newRate.rate())
-                    .findFirst()
-                    .ifPresent(prevRate -> {
-
-                    }));
+            money24Rates.forEach(newRate -> ratePublisher.publish(
+                    internalRates.stream()
+                            .filter(rate -> rate.id() == newRate.id())
+                            .findFirst()
+                            .orElse(null),
+                    newRate
+            ));
         });
     }
 }

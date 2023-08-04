@@ -1,7 +1,7 @@
 package com.ua.money24.service.observer;
 
-import com.ua.money24.model.response.ExecAsPublicResponse;
+import com.ua.money24.model.Rate;
 
 public interface RateObserver {
-    void observe(ExecAsPublicResponse.Result.Rate prevRate, ExecAsPublicResponse.Result.Rate newRate);
+    void observe(Rate prevRate, Rate newRate);
 }

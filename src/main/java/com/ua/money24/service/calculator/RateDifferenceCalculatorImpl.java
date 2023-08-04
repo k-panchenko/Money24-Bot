@@ -1,5 +1,6 @@
 package com.ua.money24.service.calculator;
 
+import com.ua.money24.model.Rate;
 import com.ua.money24.model.RateDifference;
 import com.ua.money24.model.response.ExecAsPublicResponse;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,10 +14,11 @@ public class RateDifferenceCalculatorImpl implements RateDifferenceCalculator {
         this.decimalPlaces = decimalPlaces;
     }
 
+
     @Override
-    public RateDifference calculate(ExecAsPublicResponse.Result.Rate prevRate, ExecAsPublicResponse.Result.Rate newRate) {
+    public RateDifference calculate(Rate prevRate, Rate newRate) {
         return new RateDifference(
-                BigDecimal.valueOf(prevRate.r)
-        )
+                BigDecimal.valueOf()
+        );
     }
 }
