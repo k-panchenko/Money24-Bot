@@ -11,6 +11,12 @@ java {
     sourceCompatibility = JavaVersion.VERSION_17
 }
 
+configurations {
+    compileOnly {
+        extendsFrom(configurations.annotationProcessor.get())
+    }
+}
+
 repositories {
     mavenCentral()
 }
@@ -33,6 +39,9 @@ dependencies {
     runtimeOnly("org.xerial:sqlite-jdbc:${property("sqliteVersion")}")
     // https://mvnrepository.com/artifact/org.hibernate.orm/hibernate-community-dialects
     implementation("org.hibernate.orm:hibernate-community-dialects:${property("hibernateDialectsVersion")}")
+    // https://mvnrepository.com/artifact/org.projectlombok/lombok
+    compileOnly("org.projectlombok:lombok")
+    annotationProcessor("org.projectlombok:lombok")
 
 }
 

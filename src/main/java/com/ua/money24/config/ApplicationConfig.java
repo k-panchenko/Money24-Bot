@@ -11,5 +11,4 @@ import org.telegram.telegrambots.starter.TelegramBotStarterConfiguration;
 })
 @Import(TelegramBotStarterConfiguration.class)
 public class ApplicationConfig {
-
 }

@@ -8,9 +8,9 @@ import java.util.List;
 
 @Component
 public class ConfiguredRegionProvider implements RegionProvider {
-    private final int regionId;
+    private final Integer regionId;
 
-    public ConfiguredRegionProvider(@Value("${application.region}") int regionId) {
+    public ConfiguredRegionProvider(@Value("${application.region}") Integer regionId) {
         this.regionId = regionId;
     }
 

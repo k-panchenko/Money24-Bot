@@ -6,10 +6,14 @@ public interface Messages {
             Курс у цьому боті моніториться по обміннику [Money24](%s)
             """;
 
-    String RATE_CHANGED_TEMPLATE = """
-            %s Курс змінився❗️
+    String RATE_TEMPLATE = """
+            %s
                         
             Купівля: %s
             Продаж: %s
             """;
+    String RATE_CHANGED = "Курс змінився❗️";
+
+    String CURRENT_RATE = "Поточний курс \uD83D\uDCB2";
+    String SUBSCRIBE = "Підписатися \uD83D\uDD14";
 }

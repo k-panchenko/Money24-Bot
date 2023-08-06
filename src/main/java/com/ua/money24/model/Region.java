@@ -1,4 +1,4 @@
 package com.ua.money24.model;
 
-public record Region(int id) {
+public record Region(Integer id) {
 }

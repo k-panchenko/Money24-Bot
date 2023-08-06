@@ -1,4 +1,4 @@
 package com.ua.money24.model;
 
-public record Rate (int id, int regionId, String currencyCode, int currencyId, double buyRate, double sellRate) {
+public record Rate(Integer id, Integer regionId, Integer currencyId, Double buyRate, Double sellRate) {
 }

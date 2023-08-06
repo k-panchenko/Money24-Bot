@@ -11,9 +11,8 @@ public class EntityToRateConverter implements Function<Rate, com.ua.money24.mode
     public com.ua.money24.model.Rate apply(Rate rate) {
         return new com.ua.money24.model.Rate(
                 rate.getId(),
-                rate.getRegionId(),
-                rate.getCurrencyCode(),
-                rate.getCurrencyId(),
+                rate.getRegion().getId(),
+                rate.getCurrency().getId(),
                 rate.getBuyRate(),
                 rate.getSellRate()
         );

@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.TelegramLongPollingCommandBot;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Objects;
+
 @Component
 public class Money24Bot extends TelegramLongPollingCommandBot {
     private final String botUsername;
@@ -21,6 +23,13 @@ public class Money24Bot extends TelegramLongPollingCommandBot {
 
     @Override
     public void processNonCommandUpdate(Update update) {
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            var command = getRegisteredCommand(update.getMessage().getText());
+            if (Objects.isNull(command)) {
+                return;
+            }
+            command.processMessage(this, update.getMessage(), new String[]{});
+        }
 
     }
 }

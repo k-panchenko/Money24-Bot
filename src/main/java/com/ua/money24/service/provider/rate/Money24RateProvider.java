@@ -18,12 +18,14 @@ import java.util.stream.Collectors;
 public class Money24RateProvider implements RateProvider {
     private final Money24Client money24Client;
 
-    public Money24RateProvider(Money24Client money24Client) {
+    public Money24RateProvider(
+            @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection") Money24Client money24Client
+    ) {
         this.money24Client = money24Client;
     }
 
     @Override
-    public List<Rate> getRatesInRegion(int regionId) {
+    public List<Rate> getRatesInRegion(Integer regionId) {
         var response = money24Client.execAsPublic(new ExecAsPublicRequest(
                 ExecTypes.GET,
                 String.format(Methods.RATES, regionId),
@@ -39,19 +41,26 @@ public class Money24RateProvider implements RateProvider {
                 .entrySet()
                 .stream()
                 .map(entry -> {
-                    int id = entry.getKey();
+                    Integer id = entry.getKey();
                     var buyRate = findRateByType(entry.getValue(), RateType.BUY);
                     var sellRate = findRateByType(entry.getValue(), RateType.SELL);
                     return new Rate(
                             id,
                             buyRate.regionID(),
-                            buyRate.currCode(),
                             buyRate.currId(),
                             buyRate.rate(),
                             sellRate.rate()
                     );
                 })
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Rate getRateByRegionAndCurrency(Integer regionId, Integer currency) {
+        return getRatesInRegion(regionId).stream()
+                .filter(rate -> rate.currencyId() == currency)
+                .findFirst()
+                .orElse(null);
     }
 
     private ExecAsPublicResponse.Result.Rate findRateByType(List<ExecAsPublicResponse.Result.Rate> rates, String type) {
