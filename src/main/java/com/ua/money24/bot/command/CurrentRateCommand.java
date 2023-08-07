@@ -1,6 +1,8 @@
 package com.ua.money24.bot.command;
 
 import com.ua.money24.constants.Messages;
+import com.ua.money24.helper.CurrencyCallbackData;
+import com.ua.money24.helper.InlineKeyboardMarkupWrapper;
 import com.ua.money24.model.Rate;
 import com.ua.money24.model.Subscriber;
 import com.ua.money24.service.provider.currency.CurrencyProvider;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.extensions.bots.commandbot.commands.IBotCommand;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.bots.AbsSender;
 
 import java.util.function.Function;
@@ -55,14 +58,21 @@ public class CurrentRateCommand implements IBotCommand {
     @Override
     @SneakyThrows
     public void processMessage(AbsSender absSender, Message message, String[] arguments) {
-        var currency = currencyProvider.getCurrencyById(defaultCurrencyId);
+        var currencyId = arguments.length > 0 ? Integer.parseInt(arguments[0]) : defaultCurrencyId;
+        var selectedCurrency = currencyProvider.getCurrencyById(currencyId);
         var currencies = currencyProvider.getAll();
         var subscriber = subscriberProvider.findById(message.getChatId())
                 .orElseGet(() -> subscriberProvider.save(new Subscriber(message.getChatId(), null)));
-        var rate = rateProvider.getRateByRegionAndCurrency(subscriber.regionId(), currency.id());
+        var rate = rateProvider.getRateByRegionAndCurrency(subscriber.regionId(), selectedCurrency.id());
         var sendMessage = SendMessage.builder()
                 .chatId(message.getChatId())
                 .text(rateStringFunction.apply(rate))
+                .replyMarkup(new InlineKeyboardMarkupWrapper(4).add(currencies.stream()
+                        .map(currency -> InlineKeyboardButton.builder()
+                                .text(currency.flag())
+                                .callbackData(new CurrencyCallbackData(currency.id().toString()).toString())
+                                .build())
+                        .toArray(InlineKeyboardButton[]::new)))
                 .build();
         absSender.execute(sendMessage);
     }
