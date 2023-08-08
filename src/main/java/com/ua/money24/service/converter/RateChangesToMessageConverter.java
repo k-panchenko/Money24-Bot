@@ -27,8 +27,8 @@ public class RateChangesToMessageConverter implements BiFunction<Rate, Rate, Str
 
     @Override
     public String apply(Rate prevRate, Rate newRate) {
-        var buyDiff = subtract(newRate.buyRate(), prevRate.buyRate());
-        var sellDiff = subtract(newRate.sellRate(), prevRate.sellRate());
+        var buyDiff = subtract(prevRate.buyRate(), newRate.buyRate());
+        var sellDiff = subtract(prevRate.sellRate(), newRate.sellRate());
 
         var currency = currencyProvider.getCurrencyById(newRate.currencyId());
         return String.format(

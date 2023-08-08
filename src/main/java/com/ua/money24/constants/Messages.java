@@ -14,6 +14,8 @@ public interface Messages {
             """;
     String RATE_CHANGED = "Курс змінився❗️";
 
+    String SUBSCRIBE_CURRENCIES = "Виберіть валюту для підписки:";
+
     String CURRENT_RATE = "Поточний курс \uD83D\uDCB2";
     String SUBSCRIBE = "Підписатися \uD83D\uDD14";
 }

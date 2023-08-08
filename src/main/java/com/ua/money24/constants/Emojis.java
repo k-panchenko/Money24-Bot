@@ -6,4 +6,5 @@ public interface Emojis {
     String PLUS = "➕";
     String MINUS = "➖";
     String WHITE_FLAG = "\uD83C\uDFF3";
+    String BELL = "\uD83D\uDD14";
 }

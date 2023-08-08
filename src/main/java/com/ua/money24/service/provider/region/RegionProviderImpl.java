@@ -7,10 +7,10 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class ConfiguredRegionProvider implements RegionProvider {
+public class RegionProviderImpl implements RegionProvider {
     private final Integer regionId;
 
-    public ConfiguredRegionProvider(@Value("${application.region}") Integer regionId) {
+    public RegionProviderImpl(@Value("${application.region}") Integer regionId) {
         this.regionId = regionId;
     }
 
