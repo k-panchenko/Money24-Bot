@@ -18,4 +18,6 @@ public interface Messages {
 
     String CURRENT_RATE = "Поточний курс \uD83D\uDCB2";
     String SUBSCRIBE = "Підписатися \uD83D\uDD14";
+
+    String FINISH = "Завершити";
 }

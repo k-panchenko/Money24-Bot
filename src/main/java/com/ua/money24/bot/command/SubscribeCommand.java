@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.BotApiMethod;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
@@ -44,24 +45,31 @@ public class SubscribeCommand extends BaseTextCommand {
         var subscriberCurrencies = subscriber.currencies();
         var chatId = message.getChatId();
         BotApiMethod<?> method;
-        if (arguments.length > 0) {
-            var currencyId = Integer.parseInt(arguments[0]);
-            var currency = currencyProvider.getCurrencyById(currencyId);
-            var __ = subscriberCurrencies.contains(currency)
-                    ? subscriberCurrencies.remove(currency)
-                    : subscriberCurrencies.add(currency);
-            subscriberProvider.update(subscriber);
-            method = EditMessageText.builder()
+        try {
+            if (arguments.length > 0) {
+                var currencyId = Integer.parseInt(arguments[0]);
+                var currency = currencyProvider.getCurrencyById(currencyId);
+                var __ = subscriberCurrencies.contains(currency)
+                        ? subscriberCurrencies.remove(currency)
+                        : subscriberCurrencies.add(currency);
+                subscriberProvider.update(subscriber);
+                method = EditMessageText.builder()
+                        .messageId(message.getMessageId())
+                        .chatId(chatId)
+                        .text(Messages.SUBSCRIBE_CURRENCIES)
+                        .replyMarkup(createCurrencyKeyboard(subscriberCurrencies))
+                        .build();
+            } else {
+                method = SendMessage.builder()
+                        .chatId(chatId)
+                        .text(Messages.SUBSCRIBE_CURRENCIES)
+                        .replyMarkup(createCurrencyKeyboard(subscriberCurrencies))
+                        .build();
+            }
+        } catch (NumberFormatException e) {
+            method = DeleteMessage.builder()
+                    .chatId(chatId)
                     .messageId(message.getMessageId())
-                    .chatId(chatId)
-                    .text(Messages.SUBSCRIBE_CURRENCIES)
-                    .replyMarkup(createCurrencyKeyboard(subscriberCurrencies))
-                    .build();
-        } else {
-            method = SendMessage.builder()
-                    .chatId(chatId)
-                    .text(Messages.SUBSCRIBE_CURRENCIES)
-                    .replyMarkup(createCurrencyKeyboard(subscriberCurrencies))
                     .build();
         }
         try {
@@ -89,6 +97,12 @@ public class SubscribeCommand extends BaseTextCommand {
                                 ).toString())
                                 .build())
                         .toArray(InlineKeyboardButton[]::new)
-        );
+        ).add(InlineKeyboardButton.builder()
+                .text(Messages.FINISH)
+                .callbackData(new CurrencyCallbackData(
+                        "finish",
+                        CurrencyActions.SUBSCRIBE
+                ).toString())
+                .build());
     }
 }

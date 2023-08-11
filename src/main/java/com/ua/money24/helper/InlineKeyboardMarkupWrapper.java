@@ -25,7 +25,7 @@ public class InlineKeyboardMarkupWrapper extends InlineKeyboardMarkup {
         this(rowWidth, null);
     }
 
-    public InlineKeyboardMarkup add(InlineKeyboardButton... buttons) {
+    public InlineKeyboardMarkupWrapper add(InlineKeyboardButton... buttons) {
         List<InlineKeyboardButton> row = new ArrayList<>();
         for (int index = 0; index < buttons.length; index++) {
             row.add(buttons[index]);
@@ -40,12 +40,12 @@ public class InlineKeyboardMarkupWrapper extends InlineKeyboardMarkup {
         return this;
     }
 
-    public InlineKeyboardMarkup row(InlineKeyboardButton... buttons) {
+    public InlineKeyboardMarkupWrapper row(InlineKeyboardButton... buttons) {
         getKeyboard().add(List.of(buttons));
         return this;
     }
 
-    public InlineKeyboardMarkup insert(InlineKeyboardButton button) {
+    public InlineKeyboardMarkupWrapper insert(InlineKeyboardButton button) {
         if (!getKeyboard().isEmpty() && getKeyboard().get(getKeyboard().size() - 1).size() < rowWidth) {
             getKeyboard().get(getKeyboard().size() - 1).add(button);
         } else {
