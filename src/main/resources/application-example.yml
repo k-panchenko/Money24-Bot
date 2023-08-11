@@ -16,7 +16,7 @@ telegram-bot:
   username: YOUR_BOT_USERNAME_HERE
 
 application:
-  rate:
-    decimal-places: 4
   region: 3
   sync-rate-seconds: 60
+  rate:
+    decimal-places: 4
